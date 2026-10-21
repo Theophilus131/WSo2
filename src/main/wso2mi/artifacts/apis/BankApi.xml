@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/bankapi" name="BankApi" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/">
+        <inSequence>
+            <payloadFactory media-type="json" template-type="default">
+                <format>{"greetings":"Welcome to O2 Bank !!"
+                    }
+</format>
+            </payloadFactory>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+   
+<resource methods="GET" uri-template="/accounts/{id}">
+    <inSequence>
+        <header name="Accept-Encoding" action="remove" scope="transport"/>
+        <call>
+            <endpoint>
+                <http method="GET"
+                      uri-template="https://jsonplaceholder.typicode.com/posts/{uri.var.id}"/>
+            </endpoint>
+        </call>
+        <payloadFactory media-type="json">
+            <format>{"accountId": "$1", "title": "$2", "message": "Retrieved through O2 Bank"}</format>
+            <args>
+                <arg evaluator="xml" expression="get-property('uri.var.id')"/>
+                <arg evaluator="json" expression="$.title"/>
+            </args>
+        </payloadFactory>
+        <respond/>
+    </inSequence>
+    <faultSequence>
+        <log level="custom">
+            <property name="error" expression="get-property('ERROR_MESSAGE')"/>
+        </log>
+        <payloadFactory media-type="json">
+            <format>{"error": "The call to the outside service failed"}</format>
+        </payloadFactory>
+        <property name="HTTP_SC" value="502" scope="axis2"/>
+        <respond/>
+    </faultSequence>
+</resource>
+
+</api>

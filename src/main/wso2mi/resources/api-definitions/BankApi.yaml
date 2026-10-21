@@ -1,0 +1,25 @@
+openapi: 3.0.1
+info:
+  title: BankApi
+  description: API Definition of BankApi
+  version: 1.0.0
+servers:
+  - url: http://localhost:8290/bankapi
+  - url: https://localhost:8253/bankapi
+paths:
+  /:
+    get:
+      responses:
+        default:
+          description: Default response
+  /accounts/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: Default response
